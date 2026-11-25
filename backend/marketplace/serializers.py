@@ -79,11 +79,20 @@ class ProductCreateUpdateSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, data):
-        listing_type = data.get('listing_type', ListingTypeChoices.SALE)
-        if listing_type == ListingTypeChoices.EXCHANGE and not data.get('exchange_preference'):
+        listing_type = data.get(
+            'listing_type',
+            getattr(self.instance, 'listing_type', ListingTypeChoices.SALE)
+        )
+        exchange_preference = data.get(
+            'exchange_preference',
+            getattr(self.instance, 'exchange_preference', '')
+        )
+        if listing_type == ListingTypeChoices.EXCHANGE and not exchange_preference:
             raise serializers.ValidationError({
                 "exchange_preference": "Please describe what items or books you wish to receive in exchange."
             })
+        if listing_type == ListingTypeChoices.DONATION:
+            data['selling_price'] = 0
         return data
 
 class ProductStatusUpdateSerializer(serializers.ModelSerializer):

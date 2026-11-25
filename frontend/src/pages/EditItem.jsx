@@ -91,6 +91,15 @@ const EditItem = () => {
     e.preventDefault();
     setError('');
 
+    if (!formData.title.trim() || !formData.description.trim()) {
+      setError('Title and description are required.');
+      return;
+    }
+    if (formData.listing_type === 'exchange' && !formData.exchange_preference.trim()) {
+      setError('Please describe what item you want in exchange.');
+      return;
+    }
+
     try {
       setSaving(true);
       const postData = new FormData();
@@ -142,6 +151,22 @@ const EditItem = () => {
         <h1 className="text-2xl font-black text-slate-900 tracking-tight">Edit Product Listing</h1>
 
         <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+              Listing Type *
+            </label>
+            <select
+              name="listing_type"
+              value={formData.listing_type}
+              onChange={handleInputChange}
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+            >
+              <option value="sale">For Sale</option>
+              <option value="exchange">For Exchange</option>
+              <option value="donation">Free Donation</option>
+            </select>
+          </div>
+
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
               Product Title *
